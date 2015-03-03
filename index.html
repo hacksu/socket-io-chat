@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Messaging</title>
+</head>
+<body>
+
+  <h1>Messages</h1>
+
+  <!-- Our list of messages -->
+  <ul id="list">
+    <!-- This is what an indiviudal message looks like: -->
+    <!-- <li>[name] message</li> -->
+  </ul>
+
+  <!-- A form to send new messages -->
+  <form>
+    <input type="text" placeholder="Message" id="message">
+    <button id="send">Send</button>
+  </form>
+
+  <!-- Include jQuery and socket.io. -->
+  <!-- The socket.io server also serves the client library at localhost:8888/socket.io/socket.io.js,
+  but we'll use the CDN to load this so it will still work for people that aren't running the server -->
+  <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+  <script src="https://cdn.socket.io/socket.io-1.3.4.js"></script>
+  <script>
+    // Connect to our socket.io server
+    var socket = io.connect('http://localhost:8888');
+
+    // Runs when we click the send button
+    $('#send').click(function (event) {
+      // Prevent it from submitting the form and refreshing the page
+      event.preventDefault();
+
+      // Get the input text
+      var text = $('#message').val();
+
+      // Emit a message, sending it to our server
+      socket.emit('message', {
+        name: 'paul', // put your name here
+        text: text    // the text of the message
+      });
+
+      // Reset the textbox
+      $('#message').val('');
+    });
+
+    // This will run when we receive a message
+    socket.on('message', function (message) {
+
+      // Put a new <li> at the top of our message list
+      $('#list').prepend('<li>['+message.name+'] '+message.text+'</li>');
+
+    });
+  </script>
+</body>
+</html>
